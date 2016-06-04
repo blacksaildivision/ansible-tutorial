@@ -64,7 +64,7 @@ Inventory file
 --------------
 
 In inventory file you will keep connection parameters to your servers. 
-Create `hosts` file with following contents:
+Create `hosts` file in the directory with Vagrantfile with following contents:
 
 ```
 [ansible_tutorial]
@@ -81,7 +81,7 @@ Next line contains parameters for connections. You need to start with IP address
 Test connections to your server
 -------------------------------
 
-In command line execute following command (ansible [group_name|ip_address or domain|all]):
+In command line execute following command (ansible [GROUP_NAME|IP_ADDRESS or DOMAIN|ALL] -m ping -i PATH_TO_INVENTORY_FILE):
 ```
 ansible ansible_tutorial -m ping -i hosts
 ```

@@ -88,3 +88,88 @@ ansible ansible_tutorial -m ping -i hosts
 
 You should get SUCCESS status. For debugging failed connections add `-vvvv` parameter to command above. 
 
+
+Playbooks
+---------
+Playbook is an entry level to provisioning, right after Inventory file. It's a place where you can specify a role for given host or group from inventory file.
+Create a YAML file and name it as you want. In our example it's just `playbook.yml`.
+ 
+Example playbook:
+```yaml
+- hosts: ansible_tutorial
+  become: yes
+  become_user: root
+  roles:
+   - nginx
+```
+
+First line contains host or group from Inventory file. It's recommended to use groups, instead of hosts.
+Two next lines uses `become` that leads to privileges escalation. In Inventory file we specified ssh user as vagrant. 
+But it does not have enough permission (sudo) to install things. We will connect as vagrant user and then switch to root user.
+
+Last part is list of roles that we will apply to our server. 
+
+You can specify multiple groups with hosts in single playbook file, or you can keep each hosts/group in separate file.
+
+Roles and tasks
+---------------
+Roles are essential part of Ansible. When you install new tool like php or nginx you should always create a role for that.
+Roles are reusable and they can be used in different playbooks. They hold number of tasks, handlers and templates. Think of them like unix packages.
+
+First, create directory structure. Roles must be keep in `roles` directory. Inside that directory create a directory with a name of your role, like `nginx`. Inside `nginx` create another directory called `tasks`. Inside that create file and name it `main.yml`.
+So it should go like that: 
+```
+Your directory project -> roles -> NAME_OF_THE_ROLE -> tasks -> main.yml
+```
+
+main.yml will be automatically included by Ansible. Inside this file place following list of tasks:
+```yaml
+- name: install epel
+  yum:
+    name: epel-release
+    state: present
+  tags: [nginx]
+
+- name: install nginx
+  yum:
+    name: nginx
+    state: present
+  tags: [nginx]
+
+- name: enable nginx
+  service:
+    name: nginx
+    state: started
+  tags: [nginx, status]
+```
+
+It will contain 3 simple tasks:
+1. install epel repository
+2. install nginx
+3. run nginx
+
+Each task should have a descriptive name. Under that you need to specify an Ansible module you want to use.
+[Here](http://docs.ansible.com/ansible/modules_by_category.html) you can find list of all modules available in Ansible. It's worth checking, you can find tons of examples there.
+Each module takes a list of parameters. In order to install nginx we use yum. It takes a name of a package to install and state. Present means that it will be installed.
+Last thing is a list of tags. They are optional but it's nice to have them.
+
+Execute following command to run a playbook:
+```
+ansible-playbook -i hosts playbook.yml
+```
+
+It should execute 4 tasks (additional task is named setup and it's default Ansible task for gathering information about the machine).
+At the end there is section called `recap`
+If playbook is executed correctly, you should not get any failed or unreachable errors. You should have only ok and changed tasks.
+You should write the playbooks/roles/tasks in a way  where second execution of playbook will result only in ok tasks.
+ 
+Tags
+----
+You can run only tasks with specific tags:
+```
+ansible-playbook -i hosts playbook.yml --tags="status"
+```
+or
+```
+ansible-playbook -i hosts playbook.yml --tags="status,nginx"
+```

@@ -163,6 +163,7 @@ At the end there is section called `recap`
 If playbook is executed correctly, you should not get any failed or unreachable errors. You should have only ok and changed tasks.
 You should write the playbooks/roles/tasks in a way  where second execution of playbook will result only in ok tasks.
  
+ 
 Tags
 ----
 You can run only tasks with specific tags:
@@ -173,3 +174,32 @@ or
 ```
 ansible-playbook -i hosts playbook.yml --tags="status,nginx"
 ```
+
+
+Templates
+---------
+Templates are simple text files that uses Jinja2 templating engine. Most of the time in such files you will keep configuration files for different services like nginx or php etc.
+Create `templates` directory in nginx role. This is the place where you will keep all templates for given role.
+
+Inside this directory create `nginx.conf.j2` file and copy contents from [here](/example/roles/nginx/templates/nginx.conf.j2) to that file.
+This is just basic nginx configuration file. 
+
+Add following tasks to `tasks/main.yml`:
+```yaml
+- name: copy nginx configuration file
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  tags: [nginx, config]
+```
+
+Required parameters for template modules are src and dest
+`src` is the name of the template file from templates directory
+`dest` is the path with filename where template should be copied. This is path on the server.
+
+Optional parameters (it's good practice to use them with template module)
+`owner`, `group` user and group for setting ownership. Like in chown command
+`mode` are permissions to file. Like in chmod command. You can also use numeric version (`0644` istead of u=rw,g=r,o=r)

@@ -10,6 +10,16 @@
     state: present
   tags: [nginx]
 
+- name: copy nginx configuration file
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: restart nginx
+  tags: [nginx, config]
+
 - name: enable nginx
   service:
     name: nginx

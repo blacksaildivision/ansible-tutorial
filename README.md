@@ -203,3 +203,36 @@ Required parameters for template modules are src and dest
 Optional parameters (it's good practice to use them with template module)
 `owner`, `group` user and group for setting ownership. Like in chown command
 `mode` are permissions to file. Like in chmod command. You can also use numeric version (`0644` istead of u=rw,g=r,o=r)
+
+
+Handlers
+--------
+With handlers you can execute any Ansible module when given task will result in changed state. 
+Create another directory in nginx role and name it `handlers`. Inside that directory create file and name it `main.yml`.
+Place following content inside that file:
+```yaml
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+```
+
+Name is mandatory here. We want to restart nginx after changes in configuration file. 
+We will use service module to restart nginx service. 
+
+Modify the template task in `tasks/main.yml` file:
+```yaml
+- name: copy nginx configuration file
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: restart nginx
+  tags: [nginx, config]
+```
+
+We added `notify` parameter. It takes one argument which is name of the handler to execute. 
+
+Now when you will change something in the template, template task will result in changes. It will notify the handler which will restart nginx. 

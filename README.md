@@ -291,3 +291,18 @@ You can also pass variable to with_items like so:
 with_items: "{{ nginx_yum_packages }}"
 ```
 
+Variables in templates
+----------------------
+
+You can also use variables in templates. Usage is similar like in tasks, but you need to omit quotes here. 
+Take a look at the example:
+
+```j2
+    server {
+        listen       {{ nginx_port }} default_server;
+        listen       [::]:{{ nginx_port }} default_server;
+        server_name  _;
+
+```
+
+If you will use quotes it will appear in file after processing which is usually not a good thing.

@@ -306,3 +306,20 @@ Take a look at the example:
 ```
 
 If you will use quotes it will appear in file after processing which is usually not a good thing.
+
+Overriding default variables
+----------------------------
+
+Defaults as the name says, have only default values for variables if you don't specify the value. You can override variable value in playbooks like so:
+```yaml
+- hosts: ansible_tutorial
+  become: yes
+  become_user: root
+  roles:
+   - nginx
+  vars:
+   nginx_port: 8080
+```
+
+Simply add vars block and define values that should be used in given host. Host(s) defined variables has priority over default variables so in template you will get 8080 instead of 80.
+You can override as many values as you want. You can also override values per host. So if you would add second playbook you can change nginx port as well. 

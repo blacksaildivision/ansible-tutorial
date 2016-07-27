@@ -1,13 +1,10 @@
-- name: install epel
+- name: install required packages
   yum:
-    name: epel-release
+    name: "{{ item }}"
     state: present
-  tags: [nginx]
-
-- name: install nginx
-  yum:
-    name: nginx
-    state: present
+  with_items:
+   - epel-release
+   - nginx
   tags: [nginx]
 
 - name: copy nginx configuration file

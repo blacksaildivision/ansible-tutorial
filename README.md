@@ -264,3 +264,30 @@ In order to use variable in task you need to wrap them into double curly bracket
 ```
 
 Name contains variable instead of raw string. It will be replaced with value we specified in `defaults/main.yml`
+
+
+Lists and loops
+---------------
+
+Lists are useful feature of Ansible. You can simplify the tasks with them and combine same task into one.
+We can replace two tasks _Roles and tasks_ part that installs two packages into single task.
+
+```yaml
+- name: install required packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+   - epel-release
+   - nginx
+  tags: [nginx]
+```
+
+Specify the list of items by `with_items` statement. Yum module task will be executed twice. First with epel-release value, second iteration will install nginx.
+In order to get to current value we need to use special variable `item`. Use it as regular variable (double curly brackets and quotes).
+ 
+You can also pass variable to with_items like so:
+```yaml
+with_items: "{{ nginx_yum_packages }}"
+```
+

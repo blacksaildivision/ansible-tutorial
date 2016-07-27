@@ -251,7 +251,7 @@ nginx_yum_packages:
 nginx_port: 80
 ```
 
-Variable must have a name. Good practice is to prefix variable name with role name. Value can be number, string, list etc. 
+Variable must have a name. Good practice is to prefix variable name with role name. Value is defined after colon. Value can be number, string, list etc. 
 From the top we have variable with string value. Quotes around strings can be omitted. Second variable is a list with two items (strings) and last variable has numeric value. 
 
 In order to use variable in task you need to wrap them into double curly brackets `{{}}` and quotes `""`. Take a look at the example:
@@ -263,14 +263,14 @@ In order to use variable in task you need to wrap them into double curly bracket
   tags: [nginx, status]
 ```
 
-Name contains variable instead of raw string. It will be replaced with value we specified in `defaults/main.yml`
+Name parameter from service module contains variable instead of raw string. It will be replaced with value we specified in `defaults/main.yml`
 
 
 Lists and loops
 ---------------
 
-Lists are useful feature of Ansible. You can simplify the tasks with them and combine same task into one.
-We can replace two tasks _Roles and tasks_ part that installs two packages into single task.
+Lists are useful feature of Ansible. You can simplify tasks by combining them together.
+We can replace two tasks from _Roles and tasks_ part that installs two packages into single task.
 
 ```yaml
 - name: install required packages
@@ -286,7 +286,7 @@ We can replace two tasks _Roles and tasks_ part that installs two packages into 
 Specify the list of items by `with_items` statement. Yum module task will be executed twice. First with epel-release value, second iteration will install nginx.
 In order to get to current value we need to use special variable `item`. Use it as regular variable (double curly brackets and quotes).
  
-You can also pass variable to with_items like so:
+You can also pass variable to with_items from default like so:
 ```yaml
 with_items: "{{ nginx_yum_packages }}"
 ```
@@ -295,7 +295,7 @@ Variables in templates
 ----------------------
 
 You can also use variables in templates. Usage is similar like in tasks, but you need to omit quotes here. 
-Take a look at the example:
+Take a look at the example taken from `nginx.conf.j2`:
 
 ```j2
     server {
@@ -310,7 +310,7 @@ If you will use quotes it will appear in file after processing which is usually 
 Overriding default variables
 ----------------------------
 
-Defaults as the name says, have only default values for variables if you don't specify the value. You can override variable value in playbooks like so:
+Defaults as the name says, have only default values for variables if you don't specify it in playbook. You can override variable default value in playbooks like so:
 ```yaml
 - hosts: ansible_tutorial
   become: yes

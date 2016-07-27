@@ -236,3 +236,90 @@ Modify the template task in `tasks/main.yml` file:
 We added `notify` parameter. It takes one argument which is name of the handler to execute. 
 
 Now when you will change something in the template, template task will result in changes. It will notify the handler which will restart nginx. 
+
+
+Defaults (variables)
+--------------------
+Like in any other programming language you can use variables with Ansible.
+Create `defaults` directory in nginx role directory. Inside this directory add `main.yml` file and place following contents there:
+
+```yaml
+nginx_service_name: nginx
+nginx_yum_packages:
+ - epel-release
+ - nginx
+nginx_port: 80
+```
+
+Variable must have a name. Good practice is to prefix variable name with role name. Value is defined after colon. Value can be number, string, list etc. 
+From the top we have variable with string value. Quotes around strings can be omitted. Second variable is a list with two items (strings) and last variable has numeric value. 
+
+In order to use variable in task you need to wrap them into double curly brackets `{{}}` and quotes `""`. Take a look at the example:
+```yaml
+- name: enable nginx
+  service:
+    name: "{{ nginx_service_name }}"
+    state: started
+  tags: [nginx, status]
+```
+
+Name parameter from service module contains variable instead of raw string. It will be replaced with value we specified in `defaults/main.yml`
+
+
+Lists and loops
+---------------
+
+Lists are useful feature of Ansible. You can simplify tasks by combining them together.
+We can replace two tasks from _Roles and tasks_ part that installs two packages into single task.
+
+```yaml
+- name: install required packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+   - epel-release
+   - nginx
+  tags: [nginx]
+```
+
+Specify the list of items by `with_items` statement. Yum module task will be executed twice. First with epel-release value, second iteration will install nginx.
+In order to get to current value we need to use special variable `item`. Use it as regular variable (double curly brackets and quotes).
+ 
+You can also pass variable to with_items from default like so:
+```yaml
+with_items: "{{ nginx_yum_packages }}"
+```
+
+Variables in templates
+----------------------
+
+You can also use variables in templates. Usage is similar like in tasks, but you need to omit quotes here. 
+Take a look at the example taken from `nginx.conf.j2`:
+
+```j2
+    server {
+        listen       {{ nginx_port }} default_server;
+        listen       [::]:{{ nginx_port }} default_server;
+        server_name  _;
+
+```
+
+If you will use quotes it will appear in file after processing which is usually not a good thing.
+
+Overriding default variables
+----------------------------
+
+Defaults as the name says, have only default values for variables if you don't specify it in playbook. You can override variable default value in playbooks like so:
+```yaml
+- hosts: ansible_tutorial
+  become: yes
+  become_user: root
+  roles:
+   - nginx
+  vars:
+   nginx_port: 8080
+```
+
+Simply add vars block and define values that should be used in given host. Host(s) defined variables has priority over default variables so in template you will get 8080 instead of 80.
+You can override as many values as you want. You can also override values per host. So if you would add second playbook you can change nginx port as well. 

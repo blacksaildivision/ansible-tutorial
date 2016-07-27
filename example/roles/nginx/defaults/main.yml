@@ -1,0 +1,5 @@
+nginx_service_name: nginx
+nginx_yum_packages:
+ - epel-release
+ - nginx
+nginx_port: 80

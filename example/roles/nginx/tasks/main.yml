@@ -22,6 +22,6 @@
 
 - name: enable nginx
   service:
-    name: nginx
+    name: "{{ nginx_service_name }}"
     state: started
   tags: [nginx, status]

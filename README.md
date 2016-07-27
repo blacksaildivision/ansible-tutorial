@@ -236,3 +236,31 @@ Modify the template task in `tasks/main.yml` file:
 We added `notify` parameter. It takes one argument which is name of the handler to execute. 
 
 Now when you will change something in the template, template task will result in changes. It will notify the handler which will restart nginx. 
+
+
+Defaults (variables)
+--------------------
+Like in any other programming language you can use variables with Ansible.
+Create `defaults` directory in nginx role directory. Inside this directory add `main.yml` file and place following contents there:
+
+```yaml
+nginx_service_name: nginx
+nginx_yum_packages:
+ - epel-release
+ - nginx
+nginx_port: 80
+```
+
+Variable must have a name. Good practice is to prefix variable name with role name. Value can be number, string, list etc. 
+From the top we have variable with string value. Quotes around strings can be omitted. Second variable is a list with two items (strings) and last variable has numeric value. 
+
+In order to use variable in task you need to wrap them into double curly brackets `{{}}` and quotes `""`. Take a look at the example:
+```yaml
+- name: enable nginx
+  service:
+    name: "{{ nginx_service_name }}"
+    state: started
+  tags: [nginx, status]
+```
+
+Name contains variable instead of raw string. It will be replaced with value we specified in `defaults/main.yml`

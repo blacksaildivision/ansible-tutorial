@@ -2,7 +2,7 @@ Ansible tutorial
 ================
 
 > **Note:**
-> This is **tl;dr** version for full tutorial here:  [Ansible tutorial](http://blog.astaz3l.com/2016/06/04/ansible-tutorial-part-1/)
+> This is **tl;dr** version for full tutorial here:  [Ansible tutorial](https://blacksaildivision.com/ansible-tutorial-part-1/)
 > Read it if you want to get more information. Tutorial on GitHub has only essential things from full tutorial:)
 
 
